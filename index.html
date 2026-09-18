@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#04060f" />
+  <title>Ascend — Scale Smarter, Not Harder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script type="importmap">
+  { "imports": {
+    "three": "https://unpkg.com/three@0.143.0/build/three.module.js",
+    "three/examples/jsm/": "https://unpkg.com/three@0.143.0/examples/jsm/"
+  }}
+  </script>
+  <style>
+    :root{
+      --bg:#04060f; --bg-2:#060a18; --ink:#f3f6ff; --muted:#9aa6c4; --muted-2:#6b7796;
+      --line:rgba(150,175,230,.12); --line-strong:rgba(150,175,230,.22);
+      --accent:#5df0a8; --accent-2:#2fd38a; --accent-ink:#032018;
+      --glass:rgba(12,18,38,.55); --glass-2:rgba(16,24,48,.65);
+      --radius:18px; --radius-lg:26px; --maxw:1180px;
+      --shadow:0 30px 80px -30px rgba(0,0,0,.75);
+      --font:'Inter',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:var(--font);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+    a{color:inherit;text-decoration:none}
+    html.lenis,html.lenis body{height:auto}
+    .lenis.lenis-smooth{scroll-behavior:auto!important}
+    .lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
+    .lenis.lenis-stopped{overflow:hidden}
+    [data-reveal]{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.22,.7,.2,1),transform .7s cubic-bezier(.22,.7,.2,1);transition-delay:var(--rd,0ms);will-change:opacity,transform}
+    [data-reveal].in{opacity:1;transform:none}
+    .planet-canvas{position:fixed;inset:0;width:100vw;height:100vh;display:block;z-index:0;pointer-events:none}
+    .page{position:relative;z-index:1}
+    .section{position:relative;z-index:1;max-width:var(--maxw);margin:0 auto;padding:clamp(80px,12vw,160px) 24px}
+    .eyebrow{display:inline-block;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
+    .section-head{max-width:680px;margin:0 auto clamp(48px,6vw,80px);text-align:center}
+    .section-head h2,.showcase-copy h2,.cta-card h2{font-size:clamp(30px,4.4vw,50px);font-weight:800;line-height:1.05;letter-spacing:-.02em;text-shadow:0 2px 40px rgba(0,0,0,.6)}
+    .section-head p{margin-top:18px;color:var(--muted);font-size:18px;line-height:1.65;text-shadow:0 1px 24px rgba(0,0,0,.55)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;font-size:15px;font-weight:600;padding:13px 22px;border-radius:999px;border:1px solid transparent;cursor:pointer;transition:transform .18s ease,box-shadow .25s ease,background .2s ease,border-color .2s ease;white-space:nowrap}
+    .btn svg{width:17px;height:17px}
+    .btn-primary{color:var(--accent-ink);background:linear-gradient(180deg,var(--accent),var(--accent-2));box-shadow:0 10px 30px -8px rgba(93,240,168,.55),inset 0 1px 0 rgba(255,255,255,.4)}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 38px -8px rgba(93,240,168,.7)}
+    .btn-outline{color:var(--ink);background:rgba(255,255,255,.04);border-color:var(--line-strong);backdrop-filter:blur(10px)}
+    .btn-outline:hover{background:rgba(255,255,255,.09);transform:translateY(-2px)}
+    .btn-ghost{color:var(--ink);background:rgba(255,255,255,.05);border-color:var(--line-strong);padding:9px 18px}
+    .btn-ghost:hover{background:rgba(255,255,255,.1)}
+
+    .hero{min-height:100vh;display:flex;flex-direction:column;background:radial-gradient(125% 62% at 50% -10%,rgba(4,6,15,.82) 0%,rgba(4,6,15,.28) 44%,transparent 68%)}
+    .nav{width:100%;max-width:var(--maxw);margin:0 auto;padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand,.footer-brand>a{display:inline-flex;align-items:center;gap:9px;font-weight:800;font-size:19px;letter-spacing:.16em}
+    .brand-mark{color:var(--accent);font-size:14px;transform:translateY(-1px);filter:drop-shadow(0 0 12px rgba(93,240,168,.45))}
+    .nav-links{display:flex;gap:30px;color:var(--muted);font-size:14.5px;margin-left:auto;margin-right:24px}
+    .nav-links a{transition:color .2s ease}.nav-links a:hover{color:var(--ink)}
+    .hero-inner{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;transform:translateY(-10vh);padding:60px 24px 0}
+    .hero-title{font-size:clamp(34px,5.2vw,62px);font-weight:800;line-height:1.04;letter-spacing:-.03em;max-width:15ch;text-shadow:0 2px 50px rgba(0,0,0,.55)}
+    .hero-title em{font-style:normal;background:linear-gradient(180deg,var(--accent),var(--accent-2));background-clip:text;-webkit-background-clip:text;color:transparent}
+    .hero-sub{margin-top:24px;max-width:560px;font-size:clamp(16px,2vw,19px);line-height:1.6;color:var(--muted);text-shadow:0 1px 24px rgba(0,0,0,.55)}
+    .hero-actions{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:38px}
+    .teacher-hero{position:absolute;right:clamp(20px,6vw,92px);bottom:clamp(42px,7vh,82px);width:clamp(190px,20vw,260px);padding:10px;border:1px solid rgba(255,255,255,.2);border-radius:24px;background:rgba(12,18,38,.48);box-shadow:0 26px 70px -28px rgba(0,0,0,.9),0 0 45px rgba(93,240,168,.12);backdrop-filter:blur(14px);transform:rotate(2deg);z-index:2}.teacher-hero img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;object-position:center 38%;border-radius:17px}.teacher-hero figcaption{padding:12px 8px 6px;text-align:left}.teacher-hero strong{display:block;font-size:14px;letter-spacing:.02em}.teacher-hero span{display:block;margin-top:4px;color:var(--accent);font-size:11px;letter-spacing:.12em;text-transform:uppercase}.logos{text-align:center;padding:0 24px clamp(36px,6vw,64px)}
+    .logos-label{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2)}
+    .logos-row{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:clamp(24px,5vw,56px);margin-top:22px}
+    .logo{font-size:17px;font-weight:700;color:var(--muted-2);opacity:.8;transition:color .2s ease,opacity .2s ease}.logo:hover{color:var(--ink);opacity:1}
+
+    .features,.showcase,.cta{background:transparent}
+    .feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .card{position:relative;overflow:hidden;padding:30px;border-radius:var(--radius);background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(14px);transition:transform .25s ease,border-color .25s ease,background .25s ease;box-shadow:0 16px 50px -30px rgba(0,0,0,.8)}
+    .card::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 120% at 0% 0%,rgba(93,240,168,.08),transparent 45%);opacity:0;transition:opacity .25s ease;pointer-events:none}.card:hover{transform:translateY(-4px);border-color:var(--line-strong);background:var(--glass-2)}.card:hover::before{opacity:1}
+    .card-icon{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;color:var(--accent);background:rgba(93,240,168,.1);border:1px solid rgba(93,240,168,.18);margin-bottom:22px}.card-icon svg{width:24px;height:24px}
+    .card h3{font-size:19px;line-height:1.25;font-weight:700}.card p{margin-top:10px;color:var(--muted);font-size:15px;line-height:1.65}
+
+    .showcase-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:clamp(36px,6vw,72px);align-items:center}.showcase-copy h2{max-width:520px}.showcase-copy p{margin-top:20px;max-width:520px;color:var(--muted);font-size:17px;line-height:1.7}.showcase-copy .btn{margin-top:30px}
+    .dashboard{position:relative;overflow:hidden;padding:24px;border-radius:var(--radius-lg);background:var(--glass-2);border:1px solid var(--line-strong);box-shadow:var(--shadow);backdrop-filter:blur(18px)}.dashboard::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(160deg,rgba(93,240,168,.35),transparent 40%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}.dash-top{display:flex;align-items:center;justify-content:space-between;gap:20px;font-size:14px;font-weight:700}.dash-live{display:inline-flex;align-items:center;gap:7px;color:var(--accent);font-size:12px;font-weight:600}.dash-live i{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);animation:pulse 1.8s ease-in-out infinite}.dash-bars{display:flex;align-items:flex-end;gap:10px;height:150px;margin-top:22px;padding:18px 16px 14px;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:14px}.dash-bar{height:calc(var(--h)*1%);flex:1;background:linear-gradient(180deg,var(--accent),rgba(47,211,138,.25));border-radius:6px 6px 3px 3px;transform-origin:bottom;animation:grow .9s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i)*90ms)}.dash-rows{display:grid;gap:14px;margin-top:24px}.dash-row{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center;color:var(--muted);font-size:13.5px}.dash-track{height:8px;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.06)}.dash-fill{height:100%;width:var(--w);border-radius:inherit;background:linear-gradient(90deg,var(--accent-2),var(--accent));animation:fill .8s ease both;animation-delay:.3s}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:clamp(56px,8vw,96px)}.stat{text-align:center;padding:30px 18px;border-radius:var(--radius);background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(12px)}.stat-value{font-size:clamp(30px,4vw,44px);font-weight:800;letter-spacing:-.04em;background:linear-gradient(180deg,#fff,var(--accent));background-clip:text;-webkit-background-clip:text;color:transparent}.stat-label{margin-top:8px;color:var(--muted);font-size:14px;line-height:1.45}
+    .cta-card{max-width:760px;margin:0 auto;text-align:center;padding:clamp(48px,7vw,80px) clamp(28px,5vw,64px);border-radius:var(--radius-lg);background:radial-gradient(120% 140% at 50% 0%,rgba(93,240,168,.12),transparent 55%),var(--glass-2);border:1px solid var(--line-strong);box-shadow:var(--shadow);backdrop-filter:blur(18px)}.cta-card p{max-width:560px;margin:20px auto 0;color:var(--muted);font-size:17px;line-height:1.65}.cta-card .hero-actions{margin-top:30px}
+    .footer{display:flex;justify-content:space-between;gap:48px;flex-wrap:wrap;margin-top:clamp(64px,9vw,110px);padding-top:48px;border-top:1px solid var(--line)}.footer-brand{max-width:240px}.footer-brand>a{font-size:18px}.footer-brand p{margin-top:18px;color:var(--muted);font-size:14px;line-height:1.6}.footer-cols{display:grid;grid-template-columns:repeat(3,minmax(110px,1fr));gap:clamp(30px,7vw,90px)}.footer-col h3{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2)}.footer-col a{display:block;margin-top:15px;color:var(--muted);font-size:14px;transition:color .2s}.footer-col a:hover{color:var(--ink)}.copyright{text-align:center;margin-top:56px;color:var(--muted-2);font-size:13px}
+    @keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}@keyframes fill{from{width:0}to{width:var(--w)}}@keyframes pulse{0%,100%{opacity:.55;transform:scale(.9)}50%{opacity:1;transform:scale(1)}}
+    @media(max-width:980px){.feature-grid{grid-template-columns:repeat(2,1fr)}.showcase-grid{grid-template-columns:1fr;text-align:center}.showcase-copy h2,.showcase-copy p{margin-left:auto;margin-right:auto}.dashboard{max-width:680px;width:100%;margin:0 auto}.stats{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:720px){.nav{padding:18px 20px}.nav-links{display:none}.section{padding:clamp(64px,16vw,110px) 20px}.hero-inner{padding-top:40px}.teacher-hero{position:relative;right:auto;bottom:auto;width:min(220px,72vw);margin-top:30px;transform:rotate(1deg)}.footer{flex-direction:column}.footer-cols{width:100%;gap:24px}}
+    @media(max-width:560px){.feature-grid{grid-template-columns:1fr}.dash-row{grid-template-columns:90px 1fr}.hero-actions{width:100%}.hero-actions .btn{flex:1}.cta-card{padding:40px 22px}.footer-cols{grid-template-columns:1fr 1fr}.footer-col:last-child{grid-column:1/-1}}
+    @media(max-width:380px){.stats{grid-template-columns:1fr}.logo{font-size:15px}.logos-row{gap:18px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-title,.hero-sub,.hero-actions,.logos,[data-reveal]{opacity:1;transform:none;transition:none}.dash-bar,.dash-fill,.dash-live i{animation:none}.planet-canvas{display:none}}
+  </style>
+</head>
+<body>
+  <canvas class="planet-canvas" aria-hidden="true"></canvas>
+  <div class="page" id="top">
+    <header class="hero">
+      <nav class="nav">
+        <a class="brand" href="#top" aria-label="Ascend home"><span class="brand-mark">▲</span><span>Ascend</span></a>
+        <div class="nav-links"><a href="#features">Features</a><a href="#solutions">Solutions</a><a href="#plans">Plans</a><a href="#learning">Learning</a></div>
+        <a class="btn btn-ghost" href="#cta">Sign Up</a>
+      </nav>
+      <div class="hero-inner">
+        <h1 class="hero-title" data-reveal style="--rd:60ms">Нийгмийн ухааныг<br><em>хамтдаа</em> судалъя</h1>
+        <p class="hero-sub" data-reveal style="--rd:180ms">Жанчивдорж багшийн хөтөлбөрөөр нийгэм, түүх, иргэний боловсролын ойлголтоо бататгаж, шалгалтдаа итгэлтэй бэлдээрэй.</p>
+        <div class="hero-actions" data-reveal style="--rd:300ms"><a class="btn btn-primary" href="#cta">Сургалтаа эхлүүлэх <span class="icon-arrow"></span></a><a class="btn btn-outline" href="#cta">Багштай холбогдох</a></div><figure class="teacher-hero" data-reveal style="--rd:360ms"><img src="teacher-hero.png" alt="Жанчивдорж багш" loading="eager"><figcaption><strong>Жанчивдорж багш</strong><span>Нийгмийн ухааны сургалт</span></figcaption></figure>
+      </div>
+      <div class="logos" data-reveal style="--rd:420ms"><div class="logos-label">Суралцагчдын хамт олон</div><div class="logos-row"><span class="logo">Түүх</span><span class="logo">Нийгэм</span><span class="logo">Иргэн</span><span class="logo">Судалгаа</span><span class="logo">Шалгалт</span><span class="logo">Амжилт</span></div></div>
+    </header>
+
+    <section class="section features" id="features">
+      <div class="section-head"><span class="eyebrow" data-reveal>Everything in orbit</span><h2 data-reveal style="--rd:80ms">One platform to run the entire revenue engine</h2><p data-reveal style="--rd:160ms">Stop stitching tools together. Ascend unifies capture, automation, and insight into a single surface your whole team actually enjoys using.</p></div>
+      <div class="feature-grid">
+        <article class="card" data-reveal style="--rd:0ms"><div class="card-icon icon-workflow"></div><h3>Clever workflows</h3><p>Automate every hand-off with visual, branching pipelines that move deals forward while you sleep.</p></article>
+        <article class="card" data-reveal style="--rd:90ms"><div class="card-icon icon-analytics"></div><h3>Live analytics</h3><p>Real-time dashboards turn raw funnel data into the one number that tells you what to do next.</p></article>
+        <article class="card" data-reveal style="--rd:180ms"><div class="card-icon icon-leads"></div><h3>Seamless leads</h3><p>Capture, score, and route every lead automatically — no spreadsheet, no leak, no lag.</p></article>
+        <article class="card" data-reveal style="--rd:270ms"><div class="card-icon icon-bolt"></div><h3>Instant triggers</h3><p>Fire actions across your stack the moment intent appears, in milliseconds not minutes.</p></article>
+        <article class="card" data-reveal style="--rd:360ms"><div class="card-icon icon-shield"></div><h3>Enterprise-grade</h3><p>SOC 2, SSO, and granular roles baked in — security that scales quietly with your team.</p></article>
+        <article class="card" data-reveal style="--rd:450ms"><div class="card-icon icon-globe"></div><h3>Global by default</h3><p>Multi-region, multi-currency, and low-latency everywhere your customers happen to be.</p></article>
+      </div>
+    </section>
+
+    <section class="section showcase" id="solutions">
+      <div class="showcase-grid">
+        <div class="showcase-copy"><span class="eyebrow" data-reveal>Built for momentum</span><h2 data-reveal style="--rd:90ms">See the whole funnel move in real time</h2><p data-reveal style="--rd:180ms">Every stage, every signal, every dollar — rendered live. Ascend gives operators the altitude to spot what’s working and the controls to double down instantly.</p><a class="btn btn-primary" href="#cta" data-reveal style="--rd:270ms">Explore the platform <span class="icon-arrow"></span></a></div>
+        <div class="dashboard" data-reveal style="--rd:160ms"><div class="dash-top"><span>Pipeline · Q3</span><span class="dash-live"><i></i>Live</span></div><div class="dash-bars"><span class="dash-bar" style="--h:62;--i:0"></span><span class="dash-bar" style="--h:88;--i:1"></span><span class="dash-bar" style="--h:47;--i:2"></span><span class="dash-bar" style="--h:95;--i:3"></span><span class="dash-bar" style="--h:71;--i:4"></span><span class="dash-bar" style="--h:80;--i:5"></span><span class="dash-bar" style="--h:58;--i:6"></span></div><div class="dash-rows"><div class="dash-row"><span>New leads</span><div class="dash-track"><div class="dash-fill" style="--w:90%"></div></div></div><div class="dash-row"><span>Qualified</span><div class="dash-track"><div class="dash-fill" style="--w:72%"></div></div></div><div class="dash-row"><span>In negotiation</span><div class="dash-track"><div class="dash-fill" style="--w:48%"></div></div></div><div class="dash-row"><span>Closed won</span><div class="dash-track"><div class="dash-fill" style="--w:34%"></div></div></div></div></div>
+      </div>
+      <div class="stats"><div class="stat" data-reveal style="--rd:0ms"><div class="stat-value">3.4×</div><div class="stat-label">Faster pipeline velocity</div></div><div class="stat" data-reveal style="--rd:80ms"><div class="stat-value">92%</div><div class="stat-label">Lead capture accuracy</div></div><div class="stat" data-reveal style="--rd:160ms"><div class="stat-value">11k+</div><div class="stat-label">Teams scaling on Ascend</div></div><div class="stat" data-reveal style="--rd:240ms"><div class="stat-value">$2.1B</div><div class="stat-label">Revenue influenced</div></div></div>
+    </section>
+
+    <section class="section cta" id="cta">
+      <div class="cta-card"><span class="eyebrow" data-reveal style="--rd:60ms">Ready when you are</span><h2 data-reveal style="--rd:140ms">Put your growth on a new trajectory</h2><p data-reveal style="--rd:220ms">Launch in minutes. No credit card. Cancel anytime. Join thousands of teams compounding revenue on Ascend.</p><div class="hero-actions" data-reveal style="--rd:300ms"><a class="btn btn-primary" href="#top">Сургалтаа эхлүүлэх <span class="icon-arrow"></span></a><a class="btn btn-outline" href="mailto:hello@ascend.example">Talk to Sales</a></div></div>
+      <footer class="footer"><div class="footer-brand"><a href="#top"><span class="brand-mark">▲</span><span>Ascend</span></a><p>The revenue command center for ambitious teams.</p></div><div class="footer-cols"><div class="footer-col"><h3>Product</h3><a href="#features">Features</a><a href="#solutions">Solutions</a><a href="#plans">Plans</a></div><div class="footer-col"><h3>Company</h3><a href="#top">About</a><a href="#top">Careers</a><a href="#learning">Blog</a></div><div class="footer-col"><h3>Legal</h3><a href="#top">Privacy</a><a href="#top">Terms</a><a href="#top">Security</a></div></div></footer>
+      <div class="copyright">© <span id="year"></span> Ascend, Inc. — Built among the stars.</div>
+    </section>
+  </div>
+
+  <script>
+    const ICONS={
+      workflow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="15" y="15" width="6" height="6" rx="1.5"/><path d="M6 9v3a3 3 0 0 0 3 3h3"/></svg>',
+      analytics:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16M8 16v-4M13 16V8M18 16v-7"/></svg>',
+      leads:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+      shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>',
+      bolt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg>',
+      globe:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20Z"/></svg>',
+      arrow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>'
+    };
+    document.querySelectorAll('.icon-workflow').forEach(el=>el.innerHTML=ICONS.workflow);document.querySelectorAll('.icon-analytics').forEach(el=>el.innerHTML=ICONS.analytics);document.querySelectorAll('.icon-leads').forEach(el=>el.innerHTML=ICONS.leads);document.querySelectorAll('.icon-shield').forEach(el=>el.innerHTML=ICONS.shield);document.querySelectorAll('.icon-bolt').forEach(el=>el.innerHTML=ICONS.bolt);document.querySelectorAll('.icon-globe').forEach(el=>el.innerHTML=ICONS.globe);document.querySelectorAll('.icon-arrow').forEach(el=>el.innerHTML=ICONS.arrow);
+    document.getElementById('year').textContent=new Date().getFullYear();
+    const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const revealItems=[...document.querySelectorAll('[data-reveal]')];
+    if(reduced){revealItems.forEach(el=>el.classList.add('in'))}else{const io=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('in');io.unobserve(entry.target)}}),{threshold:.18,rootMargin:'0px 0px -8% 0px'});revealItems.forEach(el=>io.observe(el));}
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import Lenis from 'https://unpkg.com/lenis@1.3.23/dist/lenis.mjs';
+    import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+    import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+    import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+
+    const canvas=document.querySelector('.planet-canvas');
+    const prefersReduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const CONFIG={rimColor:'#c1faff',rimPower:2.4,nightLights:10,terrainDepth:.33,terrainShade:1.3,oceanGlint:.45,oceanDeep:.12,oceanFlow:3,oceanFlowSpeed:.8,oceanFlowScale:2.1,glowColor:'#3a6cff',glowIntensity:3.35,planetRadius:1.95,spin:.03,initRotation:2.07,tilt:.37,autoRotate:0,cloud1Height:1.005,cloud1Opacity:.6,cloud1Spin:.06,cloud2Height:1.03,cloud2Opacity:.5,cloud2Spin:.14,cloud3Height:1.075,cloud3Opacity:.5,cloud3Spin:.1,bgColor:'#040a1e',flameColor:'#3a6cff',flameColor2:'#c1faff',flameAmt:.15,atmoColor:'#9fc4ff',atmoCount:320,atmoSize:22,atmoSpeed:.8,starColor:'#cfe0ff',starCount:1400,starSize:1.6,starFlicker:1,markerColor:'#ffd27a',markerCount:60,markerSize:16,markerSpeed:.5};
+    const STOPS_X=[{p:0,v:0},{p:.32,v:-3.1},{p:.64,v:3.2},{p:1,v:0}],STOPS_Y=[{p:0,v:-4.5},{p:.32,v:.55},{p:.64,v:.45},{p:1,v:.15}],STOPS_S=[{p:0,v:2.15},{p:.32,v:1},{p:.64,v:.92},{p:1,v:1.12}];
+    const lerp=(a,b,t)=>a+(b-a)*t,clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+    const smooth=t=>t*t*(3-2*t);
+    function sample(stops,p){if(p<=stops[0].p)return stops[0].v;for(let i=1;i<stops.length;i++){if(p<=stops[i].p){const a=stops[i-1],b=stops[i],t=smooth((p-a.p)/(b.p-a.p));return lerp(a.v,b.v,t)}}return stops.at(-1).v}
+    const hexToVec3=hex=>{const c=new THREE.Color(hex);return new THREE.Vector3(c.r,c.g,c.b)};
+    let renderer,scene,camera,worldGroup,planetGroup,cloudGroup,glowMesh,planetMesh,clouds=[];
+    let last=performance.now(),curP=0,curX=0,curY=STOPS_Y[0].v,curS=STOPS_S[0].v,spinPhase=0,entryStart=performance.now();
+    const lenis=prefersReduced?null:new Lenis({duration:1.15,smoothWheel:true,touchMultiplier:1.5});
+
+    try{
+      renderer=new THREE.WebGL1Renderer({canvas,antialias:true,alpha:true});
+      renderer.setPixelRatio(Math.min(devicePixelRatio,1.8));renderer.setSize(innerWidth,innerHeight);renderer.outputEncoding=THREE.sRGBEncoding;renderer.setClearColor(0x040a1e,0);
+      scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(40,innerWidth/innerHeight,.1,200);camera.position.set(0,0,8);camera.layers.enable(0);
+      const ambient=new THREE.AmbientLight(0xffffff,1.8),directional=new THREE.DirectionalLight(0xffffff,.8);directional.position.set(0,10,2);scene.add(ambient,directional);
+      worldGroup=new THREE.Group();worldGroup.position.set(0,STOPS_Y[0].v,0);worldGroup.scale.setScalar(STOPS_S[0].v);scene.add(worldGroup);planetGroup=new THREE.Group();planetGroup.rotation.z=CONFIG.tilt;worldGroup.add(planetGroup);cloudGroup=new THREE.Group();cloudGroup.rotation.z=CONFIG.tilt;cloudGroup.visible=false;worldGroup.add(cloudGroup);
+      const glowMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,uniforms:{uGlow:{value:hexToVec3(CONFIG.glowColor)},uIntensity:{value:CONFIG.glowIntensity}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',fragmentShader:'uniform vec3 uGlow;uniform float uIntensity;varying vec2 vUv;void main(){float d=length(vUv-.5)*2.;float a=pow(clamp(1.-d,0.,1.),2.2);gl_FragColor=vec4(uGlow*a*uIntensity,a);}'});glowMesh=new THREE.Mesh(new THREE.PlaneGeometry(2,2),glowMat);glowMesh.scale.setScalar(CONFIG.planetRadius*2.3);worldGroup.add(glowMesh);
+      const controls=new OrbitControls(camera,renderer.domElement);controls.enabled=false;controls.enableDamping=true;controls.autoRotate=true;controls.autoRotateSpeed=CONFIG.autoRotate;controls.enablePan=false;
+      addStars();addMotes();loadPlanet();
+      window.addEventListener('resize',resize,{passive:true});requestAnimationFrame(loop);
+    }catch(error){console.warn('Ascend planet scene unavailable:',error);canvas.style.opacity='0';}
+
+    function makePoints(count,radius,attrs){const pos=new Float32Array(count*3);for(let i=0;i<count;i++){const u=Math.random(),v=Math.random(),a=2*Math.PI*u,z=1-2*v,s=Math.sqrt(1-z*z);pos[i*3]=radius*s*Math.cos(a);pos[i*3+1]=radius*z;pos[i*3+2]=radius*s*Math.sin(a)}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));Object.entries(attrs).forEach(([k,a])=>g.setAttribute(k,new THREE.BufferAttribute(a,1)));return g}
+    function addStars(){const seeds=new Float32Array(CONFIG.starCount),bright=new Float32Array(CONFIG.starCount);const g=makePoints(CONFIG.starCount,90,{seed:seeds,bright});for(let i=0;i<CONFIG.starCount;i++){seeds[i]=Math.random()*100;bright[i]=.35+Math.random()*.65}const m=new THREE.ShaderMaterial({transparent:true,depthWrite:false,depthTest:true,blending:THREE.AdditiveBlending,uniforms:{uTime:{value:0},uSize:{value:CONFIG.starSize},uFlicker:{value:CONFIG.starFlicker},uColor:{value:new THREE.Color(CONFIG.starColor)},uRes:{value:new THREE.Vector2(innerWidth,innerHeight)}},vertexShader:'attribute float seed;attribute float bright;uniform float uTime;uniform float uSize;uniform float uFlicker;uniform vec2 uRes;varying float vTw;void main(){vec4 mv=modelViewMatrix*vec4(position,1.);float tw=.6+.4*sin(uTime*uFlicker+seed);vTw=bright*tw;gl_PointSize=max(uSize*uRes.y/900.*(90./max(-mv.z,1.)),1.);gl_Position=projectionMatrix*mv;}',fragmentShader:'uniform vec3 uColor;varying float vTw;void main(){vec2 p=gl_PointCoord-.5;float l=length(p);if(l>.5)discard;float core=smoothstep(.5,0.,l);gl_FragColor=vec4(uColor,core*vTw);}'});const points=new THREE.Points(g,m);points.frustumCulled=false;scene.add(points);scene.userData.stars=points}
+    function addMotes(){const seeds=new Float32Array(CONFIG.atmoCount),sizes=new Float32Array(CONFIG.atmoCount);const g=new THREE.BufferGeometry(),pos=new Float32Array(CONFIG.atmoCount*3);for(let i=0;i<CONFIG.atmoCount;i++){pos[i*3]=Math.random()*2-1;pos[i*3+1]=Math.random()*2-1;pos[i*3+2]=Math.random()*2-1;sizes[i]=CONFIG.atmoSize*(.4+Math.random());seeds[i]=Math.random()*100}g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('size',new THREE.BufferAttribute(sizes,1));g.setAttribute('seed',new THREE.BufferAttribute(seeds,1));const m=new THREE.PointsMaterial({color:CONFIG.atmoColor,size:.025,transparent:true,opacity:.45,depthWrite:false,blending:THREE.AdditiveBlending});const points=new THREE.Points(g,m);scene.add(points);scene.userData.motes=points}
+    function loadPlanet(){const draco=new DRACOLoader();draco.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.5/');const loader=new GLTFLoader();loader.setDRACOLoader(draco);const base='https://api.getlayers.ai/storage/v1/object/public/public/assets/ascend-d9857ad1f2/';loader.load(base+'planet.glb',gltf=>{const root=gltf.scene;let mesh;root.traverse(o=>{if(!mesh&&o.isMesh)mesh=o});if(!mesh)return;mesh.geometry.computeBoundingSphere();const radius=mesh.geometry.boundingSphere.radius;mesh.scale.setScalar(CONFIG.planetRadius/radius);mesh.material=Array.isArray(mesh.material)?mesh.material[0]:mesh.material;mesh.material=mesh.material.clone();mesh.material.color.multiplyScalar(.9);planetMesh=mesh;planetGroup.add(mesh);cloudGroup.visible=true;entryStart=performance.now();addMarkers(mesh);loadClouds(base);},undefined,e=>console.warn('Planet asset unavailable:',e));}
+    function loadClouds(base){new THREE.TextureLoader().load(base+'planet-clouds.png',tex=>{tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.repeat.set(5,5);[{h:CONFIG.cloud1Height,o:CONFIG.cloud1Opacity,s:CONFIG.cloud1Spin,ry:0},{h:CONFIG.cloud2Height,o:CONFIG.cloud2Opacity,s:CONFIG.cloud2Spin,ry:2.2},{h:CONFIG.cloud3Height,o:CONFIG.cloud3Opacity,s:CONFIG.cloud3Spin,ry:4.3}].forEach(layer=>{const mat=new THREE.MeshBasicMaterial({map:tex,transparent:true,opacity:layer.o,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending});const mesh=new THREE.Mesh(new THREE.SphereGeometry(CONFIG.planetRadius*layer.h,64,64),mat);mesh.rotation.y=layer.ry;mesh.userData.spin=layer.s;cloudGroup.add(mesh);clouds.push(mesh)})},undefined,e=>console.warn('Cloud asset unavailable:',e))}
+    function addMarkers(mesh){const count=CONFIG.markerCount;const pos=new Float32Array(count*3),seeds=new Float32Array(count);for(let i=0;i<count;i++){const a=Math.random()*Math.PI*2,z=Math.random()*2-1,s=Math.sqrt(1-z*z),r=CONFIG.planetRadius*1.012;pos[i*3]=r*s*Math.cos(a);pos[i*3+1]=r*z;pos[i*3+2]=r*s*Math.sin(a);seeds[i]=Math.random()}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('seed',new THREE.BufferAttribute(seeds,1));const m=new THREE.PointsMaterial({color:CONFIG.markerColor,size:.025,transparent:true,opacity:.9,depthTest:true,depthWrite:false,blending:THREE.AdditiveBlending});mesh.add(new THREE.Points(g,m))}
+    function resize(){if(!renderer)return;camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setPixelRatio(Math.min(devicePixelRatio,1.8));renderer.setSize(innerWidth,innerHeight);scene.userData.stars?.material.uniforms.uRes.value.set(innerWidth,innerHeight)}
+    function loop(now){lenis?.raf(now);const dt=Math.min((now-last)/1000,.05);last=now;const scrollMax=Math.max(1,document.documentElement.scrollHeight-innerHeight),targetP=clamp(scrollY/scrollMax,0,1);curP+= (targetP-curP)*Math.min(1,dt*4.5);const sideScale=clamp(innerWidth/1200,.5,1),xTarget=sample(STOPS_X,curP)*sideScale,yTarget=sample(STOPS_Y,curP),sTarget=sample(STOPS_S,curP),k=Math.min(1,dt*3.2);curX+= (xTarget-curX)*k;curY+=(yTarget-curY)*k;curS+=(sTarget-curS)*k;let entryY=0;if(!prefersReduced&&planetMesh){const t=clamp((now-entryStart)/1900,0,1);entryY=-6.5*(1-(1-t)**3)}if(worldGroup){worldGroup.position.set(curX,curY+entryY,0);worldGroup.scale.setScalar(curS);planetGroup.rotation.y=CONFIG.initRotation+spinPhase+curP*Math.PI*1.6;spinPhase+=dt*CONFIG.spin;glowMesh.quaternion.copy(camera.quaternion);clouds.forEach(c=>c.rotation.y+=dt*c.userData.spin)}if(scene.userData.stars)scene.userData.stars.material.uniforms.uTime.value+=dt;const motes=scene.userData.motes;if(motes){motes.position.copy(camera.position);motes.rotation.y=now*.00002}renderer.render(scene,camera);requestAnimationFrame(loop)}
+  </script>
+</body>
+</html>
